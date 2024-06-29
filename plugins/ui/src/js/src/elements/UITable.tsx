@@ -3,11 +3,11 @@ import { useSelector } from 'react-redux';
 import {
   DehydratedQuickFilter,
   IrisGrid,
-  IrisGridType,
   type IrisGridContextMenuData,
   IrisGridModel,
   IrisGridModelFactory,
   IrisGridProps,
+  type IrisGridType,
   IrisGridUtils,
 } from '@deephaven/iris-grid';
 import { useApi } from '@deephaven/jsapi-bootstrap';
@@ -101,6 +101,7 @@ export function UITable({
         ? ([
             new UITableMouseHandler(
               model,
+              irisGrid,
               onCellPress,
               onCellDoublePress,
               onColumnPress,
