@@ -93,7 +93,7 @@ class table(Element):
     Customization to how a table is displayed, how it behaves, and listen to UI events.
 
     Args:
-        table: The table to wrap
+        table: The table to wraps
         format_: A formatting rule or list of formatting rules for the table.
         on_row_press: The callback function to run when a row is clicked.
             The callback is invoked with the visible row data provided in a dictionary where the
