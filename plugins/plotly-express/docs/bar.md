@@ -1,4 +1,4 @@
-# Bar Plot
+# Bar Plot Test
 
 A bar plot is a graphical representation of data that uses rectangular bars to display the values of different categories or groups. Bar plots aggregate the response variable across the entire dataset for each category, so that the y-axis represents the sum of the response variable per category.
 
@@ -54,8 +54,9 @@ bar_plot_sex = dx.bar(sorted_tips, x="Day", y="TotalBill", by="Sex")
 
 Visualize the frequency of categories in a column by passing to either the `x` or `y` argument.
 
-```python 
+```python
 import deephaven.plot.express as dx
+
 tips = dx.data.tips()
 
 # count the number of occurrences of each day with a vertical bar plot
@@ -66,6 +67,7 @@ bar_plot_horizontal = dx.bar(tips, y="Day")
 ```
 
 ## API Reference
+
 ```{eval-rst}
 .. dhautofunction:: deephaven.plot.express.bar
 ```
