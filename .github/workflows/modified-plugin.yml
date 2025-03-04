@@ -6,16 +6,16 @@ on:
       - main
       - 'release/**'
   push:
-    branches:
-      - main
-      - 'release/**'
-    tags:
-      - 'plotly-express-v*'
-      - 'matplotlib-v*'
-      - 'json-v*'
-      - 'ui-v*'
-      - 'utilities-v*'
-      - 'packaging-v*'
+    # branches:
+    #   - main
+    #   - 'release/**'
+    # tags:
+    #   - 'plotly-express-v*'
+    #   - 'matplotlib-v*'
+    #   - 'json-v*'
+    #   - 'ui-v*'
+    #   - 'utilities-v*'
+    #   - 'packaging-v*'
 
 jobs:
   changes:
