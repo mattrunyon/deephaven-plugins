@@ -5,6 +5,9 @@ on:
     workflows: ['Test Modified Plugin'] # Only runs on top level workflows, not reusable workflows called from another run
     types:
       - completed
+    branches:
+      - main
+      - v*
 
 jobs:
   get-docs-packages:
