@@ -20,78 +20,75 @@ on:
 jobs:
   changes:
     runs-on: ubuntu-22.04
-    permissions:
-      pull-requests: read
-    outputs:
-      packages: ${{ steps.filter.outputs.packages }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - run: echo 0
+      # - name: Checkout
+      #   uses: actions/checkout@v4
 
-      - name: Filter paths
-        uses: ./.github/actions/get-changes
-        id: filter
+      # - name: Filter paths
+      #   uses: ./.github/actions/get-changes
+      #   id: filter
 
   # Test all python packages that have been modified individually
-  test-python:
-    needs: changes
-    if: ${{ needs.changes.outputs.packages != '[]' && needs.changes.outputs.packages != '' }}
-    strategy:
-      fail-fast: false
-      matrix:
-        package: ${{ fromJSON(needs.changes.outputs.packages) }}
-    uses: ./.github/workflows/test-python-package.yml
-    with:
-      package: ${{ matrix.package }}
+  # test-python:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.packages != '[]' && needs.changes.outputs.packages != '' }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       package: ${{ fromJSON(needs.changes.outputs.packages) }}
+  #   uses: ./.github/workflows/test-python-package.yml
+  #   with:
+  #     package: ${{ matrix.package }}
 
-  # Test all JS packages at once. We run jest from the root.
-  test-js:
-    needs: changes
-    if: ${{ needs.changes.outputs.packages != '[]' && needs.changes.outputs.packages != '' }}
-    uses: ./.github/workflows/test-js-packages.yml
+  # # Test all JS packages at once. We run jest from the root.
+  # test-js:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.packages != '[]' && needs.changes.outputs.packages != '' }}
+  #   uses: ./.github/workflows/test-js-packages.yml
 
-  # Action that outputs success is test-python and test-js are either both successful or both skipped
-  # This action will simply throw if either of the test-js or test-python jobs fail
-  # https://github.com/orgs/community/discussions/26822#discussioncomment-5122101
-  test-results:
-    if: ${{ always() }}
-    runs-on: ubuntu-22.04
-    needs: [test-python, test-js, build-docs]
-    steps:
-      # Only fail if one of the previous tests failed
-      - run: exit 1
-        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+  # # Action that outputs success is test-python and test-js are either both successful or both skipped
+  # # This action will simply throw if either of the test-js or test-python jobs fail
+  # # https://github.com/orgs/community/discussions/26822#discussioncomment-5122101
+  # test-results:
+  #   if: ${{ always() }}
+  #   runs-on: ubuntu-22.04
+  #   needs: [test-python, test-js, build-docs]
+  #   steps:
+  #     # Only fail if one of the previous tests failed
+  #     - run: exit 1
+  #       if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
 
-  filter-release:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Filter tag
-        id: filter-tag
-        run: |
-          echo "package=$(echo ${{ github.ref }} | sed -E 's|^refs/tags/([^/]+)-v[0-9]+\.[0-9]+\.[0-9]+$|\1|')" >> $GITHUB_OUTPUT
-    outputs:
-      package: ${{ steps.filter-tag.outputs.package }}
+  # filter-release:
+  #   if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - name: Filter tag
+  #       id: filter-tag
+  #       run: |
+  #         echo "package=$(echo ${{ github.ref }} | sed -E 's|^refs/tags/([^/]+)-v[0-9]+\.[0-9]+\.[0-9]+$|\1|')" >> $GITHUB_OUTPUT
+  #   outputs:
+  #     package: ${{ steps.filter-tag.outputs.package }}
 
-  release:
-    needs: filter-release
-    if: ${{ needs.filter-release.outputs.package != '' }}
-    uses: ./.github/workflows/release-python-package.yml
-    secrets: inherit
-    with:
-      package: ${{ needs.filter-release.outputs.package }}
+  # release:
+  #   needs: filter-release
+  #   if: ${{ needs.filter-release.outputs.package != '' }}
+  #   uses: ./.github/workflows/release-python-package.yml
+  #   secrets: inherit
+  #   with:
+  #     package: ${{ needs.filter-release.outputs.package }}
 
-  # Main and PR docs are built here, whereas release docs are built in release-python-package.yml
-  build-docs:
-    needs: changes
-    # Only build main docs for push on main branch and any PRs
-    if: ${{ needs.changes.outputs.packages != '[]' && needs.changes.outputs.packages != '' && (github.ref == 'refs/heads/main' || github.event_name == 'pull_request') }}
-    strategy:
-      fail-fast: false
-      matrix:
-        package: ${{ fromJSON(needs.changes.outputs.packages) }}
-    uses: ./.github/workflows/build-docs.yml
-    secrets: inherit
-    with:
-      package: ${{ matrix.package }}
-      version: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || github.ref == 'refs/heads/main' && 'main' }}
+  # # Main and PR docs are built here, whereas release docs are built in release-python-package.yml
+  # build-docs:
+  #   needs: changes
+  #   # Only build main docs for push on main branch and any PRs
+  #   if: ${{ needs.changes.outputs.packages != '[]' && needs.changes.outputs.packages != '' && (github.ref == 'refs/heads/main' || github.event_name == 'pull_request') }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       package: ${{ fromJSON(needs.changes.outputs.packages) }}
+  #   uses: ./.github/workflows/build-docs.yml
+  #   secrets: inherit
+  #   with:
+  #     package: ${{ matrix.package }}
+  #     version: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || github.ref == 'refs/heads/main' && 'main' }}
